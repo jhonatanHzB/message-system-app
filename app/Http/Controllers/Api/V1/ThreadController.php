@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\StoreThreadRequest;
 use App\Models\Thread;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ThreadController extends Controller
 {
@@ -51,5 +53,41 @@ class ThreadController extends Controller
         $thread->load(['messages.user', 'participants']);
 
         return response()->json($thread);
+    }
+
+    /**
+     *  Crea un nuevo hilo con su primer mensaje y participantes
+     */
+    public function store(StoreThreadRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+
+        // Se usa la transacción para garantizar la integridad de los datos.
+        $thread = DB::transaction(function () use ($validated, $request) {
+
+            // Creación del hilo.
+            $thread = Thread::create(['subject' => $validated['subject']]);
+
+            // Creación del mensaje inicial.
+            $thread->messages()->create([
+                'body' => $validated['body'],
+                'user_id' => $request->user()->id,
+            ]);
+
+            // Añadir participantes al hilo.
+            // Se incluye al creador y válida no haya duplicados.
+            $participantIds = collect($validated['participants'])
+                ->push($request->user()->id)
+                ->unique();
+
+            $thread->participants()->attach($participantIds);
+
+            return $thread;
+        });
+
+        // Carga las relaciones para devolver a la respuesta.
+        $thread->load(['participants', 'latestMessage.user']);
+
+        return response()->json($thread, 201);
     }
 }
