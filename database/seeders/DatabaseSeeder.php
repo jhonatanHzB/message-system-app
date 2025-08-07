@@ -15,10 +15,8 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@message-app.com',
-            'password' => bcrypt('password'),
+        $this->call([
+            ThreadAndMessageSeeder::class,
         ]);
     }
 }
