@@ -36,6 +36,11 @@ class User extends Authenticatable
     ];
 
     /**
+     * El hilo padre se actualiza su timestamp cada vez que un mensaje es creado o actualizado.
+     */
+    protected $touches = ['thread'];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
