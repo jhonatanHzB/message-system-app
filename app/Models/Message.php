@@ -36,4 +36,12 @@ class Message extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Obtiene todos los registros de estado de lectura para mensaje.
+     */
+    public function readStatus()
+    {
+        return $this->hasMany(MessageReadStatus::class);
+    }
 }

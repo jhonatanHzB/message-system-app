@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\MessageController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\ThreadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -50,4 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // ===== Rutas de Mensajes (Reply)
     // GET /api/threads/{thread}/messages -> Enviá respuesta en hilo.
     Route::post('/threads/{thread}/messages', [MessageController::class, 'store']);
+
+    // ===== Rutas de Notificaciones
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/threads/{thread}/read', [NotificationController::class, 'markAsRead']);
 });
