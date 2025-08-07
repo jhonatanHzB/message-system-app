@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Message extends Model
 {
@@ -16,6 +17,9 @@ class Message extends Model
      * @var string[]
      */
     protected $fillable = ['thread_id', 'user_id', 'body'];
+
+    // Al guardar/actualizar un mensaje, actualiza automáticamente el updated_at del hilo padre.
+    protected $touches = ['thread'];
 
     /**
      * Un mensaje pertenece a un hilo.
@@ -39,8 +43,10 @@ class Message extends Model
 
     /**
      * Obtiene todos los registros de estado de lectura para mensaje.
+     *
+     * @return HasMany
      */
-    public function readStatus()
+    public function readStatus(): HasMany
     {
         return $this->hasMany(MessageReadStatus::class);
     }
