@@ -1,10 +1,10 @@
 import React from 'react';
 import { Row, Col } from 'react-bootstrap';
-import Header from './Header';
-import ConversationList from './ConversationList';
-import MessageView from './MessageView';
+import Header from '../components/Header';
+import ConversationList from '../components/ConversationList';
+import MessageView from '../components/MessageView';
 
-const AppLayout: React.FC = () => {
+const Inbox: React.FC = () => {
     return (
         <>
             <Header />
@@ -25,4 +25,4 @@ const AppLayout: React.FC = () => {
     );
 };
 
-export default AppLayout;
+export default Inbox;

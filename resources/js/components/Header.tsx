@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navbar, Container, Form, FormControl, Button } from 'react-bootstrap';
 import Notifications from './Notifications';
+import LogoutButton from './LogoutButton';
 
 const Header: React.FC = () => {
     return (
@@ -20,7 +21,10 @@ const Header: React.FC = () => {
                                     />
                                     <Button variant="outline-info"><i className="ri-search-line"></i></Button>
                                 </Form>
-                                <Notifications />
+                                <div className="d-flex gap-3">
+                                    <Notifications />
+                                    <LogoutButton />
+                                </div>
                             </Container>
                         </Navbar>
                     </div>
