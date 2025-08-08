@@ -1,61 +1,269 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Mensajería API (Prueba Técnica)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Esta es la implementación del backend para un sistema de mensajería tipo "inbox". La API está construida con Laravel 12 y sigue los principios RESTful para gestionar usuarios, conversaciones y mensajes.
 
-## About Laravel
+# ✨ Características
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+* Autenticación segura: Basada en tokens con Laravel Sanctum.
+* Gestión de conversaciones: Creación de hilos de conversación entre dos o más usuarios.
+* Mensajería en tiempo real (simulada): Envío y recepción de mensajes dentro de los hilos.
+* Sistema de notificaciones: Recuento de mensajes no leídos y funcionalidad para marcarlos como leídos.
+* API documentada: Endpoints claros y predecibles para una fácil integración con un cliente frontend.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# 🚀 Instalación y Configuración
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Sigue estos pasos para levantar el proyecto en un entorno local.
 
-## Learning Laravel
+1. Clonar el repositorio
+```
+git clone https://github.com/jhonatanHzB/message-system-app.git
+cd message-system-app
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2. Instalar dependencias de PHP
+```
+composer install
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+3. Copia el archivo de ejemplo ```.env.example``` y crea tu propio archivo de configuración ```.env```.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
+cp .env.example .env
+```
 
-## Laravel Sponsors
+Abre el archivo ```.env``` y configura las credenciales de tu base de datos (MySQL):
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=message_board
+DB_USERNAME=message_app_user
+DB_PASSWORD=password
+```
 
-### Premium Partners
+4. Generar la clave de la aplicación
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```
+php artisan key:generate
+```
 
-## Contributing
+5. Ejecutar las migraciones y los seeders
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Este comando creará la estructura de la base de datos y la poblará con datos de prueba (usuarios, conversaciones, etc.).
 
-## Code of Conduct
+```
+php artisan migrate --seed
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+6. Iniciar el servidor local
 
-## Security Vulnerabilities
+```
+php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+La API estará disponible en ```http://127.0.0.1:8000```.
 
-## License
+# 📚 Documentación de la API
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Todas las peticiones a endpoints protegidos deben incluir las siguientes cabeceras:
+
+* ```Authorization: Bearer <token>```
+* ```Accept: application/json```
+
+<hr>
+
+## Autenticación
+
+### Login de Usuario
+
+Inicia sesión para obtener un token de acceso.
+
+* Endpoint: ```POST /api/login```
+* Autorización: Pública
+* Body (raw/json):
+```
+{
+    "email": "johndoe@message-app.com",
+    "password": "password"
+}
+```
+* Respuesta Exitosa (200 OK):
+```
+{
+    "access_token": "1|AbcDefGhi...",
+    "token_type": "Bearer"
+}  
+```
+
+### Obtener Datos del Usuario Autenticado
+
+Devuelve la información del usuario correspondiente al token.
+
+* Endpoint: ```GET /api/user```
+* Autorización: Bearer Token
+* Respuesta Exitosa (200 OK):
+```
+{
+    "id": 1,
+    "name": "John Doe",
+    "email": "johndoe@message-app.com",
+    "email_verified_at": "2025-08-07T23:33:37.000000Z",
+    "created_at": "2025-08-07T23:33:38.000000Z",
+    "updated_at": "2025-08-07T23:33:38.000000Z"
+}
+```
+
+<hr>
+
+## Conversaciones (Threads)
+
+## Listar Conversaciones
+
+Obtiene una lista paginada de todas las conversaciones en las que participa el usuario. Permite búsqueda por asunto.
+
+* Endpoint: ```GET /api/threads```
+* Autorización: Bearer Token
+* Parámetros de Query (Opcionales):
+  * ```page``` (integer): Número de página a solicitar. Ej: ```?page=2```
+  * ```search``` (string): Término de búsqueda por asunto. Ej: ```?search=Proyecto```
+* Respuesta Exitosa (200 OK):
+```
+{
+    "current_page": 1,
+    "data": [
+        {
+            "id": 2,
+            "subject": "Avance del proyecto",
+            "created_at": "2025-08-07T23:33:38.000000Z",
+            "updated_at": "2025-08-07T23:33:38.000000Z",
+            "participants": [ /* ... */],
+            "latest_message": { /* ... */ },
+            "pivot": {
+                "user_id": 1,
+                "thread_id": 2
+            }
+        }
+    ],
+    "first_page_url": "http://127.0.0.1:8000/api/threads?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "http://127.0.0.1:8000/api/threads?page=1",
+    // .. datos de paginación
+}
+```
+
+### Crear Nueva Conversación
+
+Crea un nuevo hilo con un primer mensaje y una lista de participantes.
+
+* Endpoint: POST /api/threads
+* Autorización: Bearer Token
+* Body (raw/json):
+```
+{
+    "subject": "Revisión de la API",
+    "body": "Hola equipo, ¿podemos revisar algunos puntos?",
+    "participants": [2, 3] 
+}
+```
+* Respuesta Exitosa (201 Created):
+```
+{
+    "subject": "Revisión de la API",
+    "updated_at": "2025-08-07T23:48:23.000000Z",
+    "created_at": "2025-08-07T23:48:23.000000Z",
+    "id": 3,
+    "participants": [ /* ... */ ],
+    "latest_message": { /* */ }
+}
+```
+
+### Ver una Conversación Específica
+
+Obtiene los detalles de un hilo, incluyendo todos sus mensajes y participantes.
+
+* Endpoint: ```GET /api/threads/{id}```
+* Autorización: Bearer Token
+* Respuesta Exitosa (200 OK):
+```
+{
+    "id": 3,
+    "subject": "Revisión de la API",
+    "created_at": "2025-08-07T23:48:23.000000Z",
+    "updated_at": "2025-08-07T23:48:23.000000Z",
+    "messages": [ /* ... */],
+    "participants": [ /* ... */ ]
+}
+```
+
+<hr>
+
+## Mensajes
+
+### Enviar Respuesta en una Conversación
+
+Añade un nuevo mensaje a un hilo existente.
+
+* Endpoint: ```POST /api/threads/{id}/messages```
+* Autorización: Bearer Token
+* Body (raw/json):
+```
+{
+    "body": "¡Claro! Agendo una reunion para revisarlos."
+}
+```
+* Respuesta Exitosa (201 Created):
+```
+{
+    "body": "¡Claro! Agendo una reunion para revisarlos.",
+    "user_id": 1,
+    "thread_id": 3,
+    "updated_at": "2025-08-07T23:56:14.000000Z",
+    "created_at": "2025-08-07T23:56:14.000000Z",
+    "id": 7,
+    "thread": {
+        "id": 3,
+        "subject": "Revisión de la API",
+        "created_at": "2025-08-07T23:48:23.000000Z",
+        "updated_at": "2025-08-07T23:56:14.000000Z"
+    },
+    "user": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "johndoe@message-app.com",
+        "email_verified_at": "2025-08-07T23:33:37.000000Z",
+        "created_at": "2025-08-07T23:33:38.000000Z",
+        "updated_at": "2025-08-07T23:33:38.000000Z"
+    }
+}
+```
+
+<hr>
+
+## Notificaciones
+### Obtener Notificaciones
+
+Devuelve el número total de mensajes no leídos por el usuario.
+
+* Endpoint: ```GET /api/notifications```
+* Autorización: Bearer Token
+* Respuesta Exitosa (200 OK):
+```
+{
+    "unread_messages_count": 2
+}
+```
+
+### Marcar Mensajes como Leídos
+
+Marca todos los mensajes no leídos de un hilo específico como leídos para el usuario. Es ideal llamar a este endpoint cuando el usuario entra a una conversación.
+
+* Endpoint: ```POST /api/threads/{id}/read```
+* Autorización: Bearer Token
+* Respuesta Exitosa (200 OK):
+```
+{
+    "message": "Mensajes marcados como leídos exitosamente."
+}
+```

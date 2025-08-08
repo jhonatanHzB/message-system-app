@@ -1,0 +1,212 @@
+{
+	"info": {
+		"_postman_id": "f7108dd5-686e-48f7-a5d3-f502449051b2",
+		"name": "Message App",
+		"description": "Implementación de una API REST para un sistema de mensajería tipo \"inbox\".",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "4943622"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"johndoe@message-app.com\",\n    \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/api/login",
+				"description": "```\nInicia sesión para obtener un token de acceso.\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar Perfil",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{Token}}"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "http://127.0.0.1:8000/api/user",
+				"description": "```\nDevuelve la información del usuario correspondiente al token.\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Listar Conversaciones",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{Token}}"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "http://127.0.0.1:8000/api/threads",
+				"description": "```\nObtiene una lista paginada de todas las conversaciones en las que participa el usuario. Permite búsqueda por asunto.\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Nuevo Hilo",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{Token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subject\": \"Revisión de la API\",\n    \"body\": \"Hola equipo, ¿podemos revisar algunos puntos?\",\n    \"participants\": [2, 3] \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/api/threads",
+				"description": "```\nCrea un nuevo hilo con un primer mensaje y una lista de participantes.\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar conversación",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{Token}}"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "http://127.0.0.1:8000/api/threads/3",
+				"description": "```\nObtiene los detalles de un hilo, incluyendo todos sus mensajes y participantes.\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Enviar una Respuesta (Reply)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{Token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"body\": \"¡Claro! Agendo una reunion para revisarlos.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:8000/api/threads/3/messages",
+				"description": "```\nAñade un nuevo mensaje a un hilo existente.\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Consulta las Notificaciones",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{Token}}"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "http://127.0.0.1:8000/api/notifications",
+				"description": "```\nDevuelve el número total de mensajes no leídos por el usuario.\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Lee una Conversación",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{Token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "http://127.0.0.1:8000/api/threads/2/read",
+				"description": "```\nMarca todos los mensajes no leídos de un hilo específico como leídos para el usuario. Es ideal llamar a este endpoint cuando el usuario entra a una conversación.\n\n ```"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "Token",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
