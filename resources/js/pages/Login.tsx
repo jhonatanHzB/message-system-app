@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { AuthService } from '../src/services';
+import Alert from 'react-bootstrap/Alert';
+
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -8,6 +10,7 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [show, setShow] = useState(true);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -15,43 +18,31 @@ const Login: React.FC = () => {
 
         if (!email || !password) {
             setError('Por favor, completa ambos campos.');
+            setShow(true);
             return;
         }
 
         try {
             setLoading(true);
 
-            const response = await axios.post(
-                './api/login',
-                { email, password },
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            const resp = await AuthService.login({ email, password });
+            const token = resp.access_token;
 
-            if (response.status === 200) {
-                const token = response.data?.access_token;
-
-                if (!token) {
-                    setError('No se recibió el token de autenticación.');
-                    return;
-                }
-
-                localStorage.setItem('auth_token', token);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-                navigate('/app', { replace: true });
-            } else {
-                setError('No se pudo iniciar sesión. Intenta de nuevo.');
+            if (!token) {
+                setError('No se recibió el token de autenticación.');
+                setShow(true);
+                return;
             }
+
+            localStorage.setItem('auth_token', token);
+
+            navigate('/app', { replace: true });
         } catch (err: any) {
             const msg =
                 err?.response?.data?.message ||
                 'Credenciales inválidas. Inténtalo de nuevo.';
             setError(msg);
+            setShow(true);
         } finally {
             setLoading(false);
         }
@@ -60,9 +51,9 @@ const Login: React.FC = () => {
     return (
         <main className="form-signin w-100 m-auto">
             {error && (
-                <div className="mb-4 rounded bg-red-100 text-red-700 px-3 py-2 text-sm">
+                <Alert show={show} variant="warning" dismissible onClose={() => setShow(false)} className="my-4">
                     {error}
-                </div>
+                </Alert>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">

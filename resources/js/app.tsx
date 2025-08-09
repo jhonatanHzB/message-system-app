@@ -5,6 +5,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Inbox from './pages/Inbox';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const container = document.querySelector('.app');
 
@@ -18,7 +19,15 @@ if (container) {
                     <Route path="/" element={<Navigate to="/login" replace />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/app" element={<Inbox />} />
+                    <Route
+                        path="/app"
+                        element={
+                            <ProtectedRoute>
+                                <Inbox />
+                            </ProtectedRoute>
+                        }
+                    />
+
                     <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>
             </BrowserRouter>

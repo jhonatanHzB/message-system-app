@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { http } from '../lib/http';
+import { http } from '../src/http';
 
 type Props = {
     className?: string;

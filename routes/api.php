@@ -17,9 +17,9 @@ Route::post('/login', function (Request $request) {
     ]);
 
     if (!Auth::attempt($credentials)) {
-        throw ValidationException::withMessages([
-            'email' => ['Los datos proporcionadas son incorrectos.'],
-        ]);
+        return response()->json([
+            'message' => 'Los datos proporcionados son incorrectos.',
+        ], 401);
     }
 
     $user = Auth::user();
