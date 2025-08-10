@@ -18,6 +18,8 @@ export type Thread = Timestamps & {
     subject: string;
     participants?: Array<User>;
     latest_message?: Message;
+    thread_id?: number;
+    unread_count?: number;
 };
 
 export type Message = Timestamps & {
@@ -31,4 +33,9 @@ export type Message = Timestamps & {
 export interface Pivot {
     thread_id: number;
     user_id:   number;
+}
+
+export interface Notification {
+    unread_messages_count: number;
+    threads: Array<Required<Pick<Thread, "thread_id" | "subject" | "unread_count">>> | [];
 }

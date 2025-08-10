@@ -1,6 +1,6 @@
-export type GetNotificationsResponse = {
-    unread_messages_count: number;
-};
+import { Notification } from '../common';
+
+export type GetNotificationsResponse = Notification;
 
 export type MarkThreadReadResponse = {
     message: string;

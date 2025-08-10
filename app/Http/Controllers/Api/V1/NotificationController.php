@@ -32,25 +32,38 @@ class NotificationController extends Controller
         // - Se filtra por los IDs de hilos del usuario.
         // - Se excluyen mensajes del mismo usuario.
         // - Se usa whereNotExists para verificar eficientemente la ausencia de lectura.
-        // Resultado: número entero con el total de mensajes no leídos.
+        // Resultado: total de mensajes no leídos e hilos.
         $threadIds = DB::table('participants')
             ->where('user_id', $user->id)
             ->pluck('thread_id');
 
-        $unreadCount = DB::table('messages')
-            ->whereIn('thread_id', $threadIds)
-            ->where('user_id', '!=', $user->id)
+        // Conteo de no leídos por hilo + subject del hilo
+        $perThread = DB::table('messages as m')
+            ->join('threads as t', 't.id', '=', 'm.thread_id')
+            ->whereIn('m.thread_id', $threadIds)
+            ->where('m.user_id', '!=', $user->id)
             ->whereNotExists(function ($query) use ($user) {
                 $query->select(DB::raw(1))
                     ->from('message_read_status')
-                    ->whereColumn('message_read_status.message_id', 'messages.id')
+                    ->whereColumn('message_read_status.message_id', 'm.id')
                     ->where('message_read_status.user_id', $user->id);
             })
-            ->count();
+            ->groupBy('m.thread_id', 't.subject')
+            ->orderByDesc(DB::raw('COUNT(*)'))
+            ->get([
+                'm.thread_id as thread_id',
+                't.subject as subject',
+                DB::raw('COUNT(*) as unread_count'),
+            ]);
+
+        // Total de no leídos (suma de todos los hilos)
+        $totalUnread = $perThread->sum('unread_count');
 
         return response()->json([
-            'unread_messages_count' => $unreadCount,
+            'unread_messages_count' => $totalUnread,
+            'threads' => $perThread,
         ]);
+
     }
 
     /**
