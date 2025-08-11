@@ -15,6 +15,7 @@ export type User = Timestamps & {
 
 export type Thread = Timestamps & {
     id: ID;
+    current_user_id?: number;
     subject: string;
     participants?: Array<User>;
     latest_message?: Message;

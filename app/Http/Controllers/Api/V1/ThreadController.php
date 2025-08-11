@@ -21,6 +21,8 @@ class ThreadController extends Controller
 
         // Construimos la consulta base para obtener los hilos del usuario.
         $query = $user->threads()
+            ->select('threads.*')
+            ->selectRaw('? as current_user_id', [$user->id])
             ->orderBy('updated_at', 'desc')
             ->with(['participants', 'latestMessage.user']);
 
